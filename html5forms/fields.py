@@ -28,18 +28,21 @@ class Html5Field(forms.fields.Field):
     :type autofocus: Boolean
     """
 
-    def __init__(self, choices=(), placeholder=None, autofocus=False, class_attr=[],
+    def __init__(self, choices=(), placeholder=None, autofocus=False, class_attr=[], foundation_class = [],  
             *args, **kwargs):
         self.placeholder = placeholder
         self.autofocus = autofocus
         self.class_attr = class_attr
+        self.foundation_class_attr = foundation_class
         self.choices = choices
         super(Html5Field, self).__init__(*args, **kwargs)
         
 
     def widget_attrs(self, widget):
+        default_class = 'input-text'
         widget_attrs = super(Html5Field, self).widget_attrs(widget)
         current_class = widget_attrs.get('class', '').split()
+        current_class.append(default_class);
 
         if self.placeholder:
             widget_attrs['placeholder'] = self.placeholder
@@ -52,12 +55,20 @@ class Html5Field(forms.fields.Field):
             current_class.append('required')
 
         if isinstance(self.class_attr, (str, unicode)):
-            self.class_attr = self.class_attr.split()    
+            self.class_attr = self.class_attr.split()
+
+        if isinstance(self.foundation_class_attr, (str, unicode)):
+            self.foundation_class_attr = self.foundation_class_attr.split()
 
         for classitem in self.class_attr:
             if classitem not in current_class:
                 current_class.append(classitem)
-
+                
+        for classitem in self.foundation_class_attr:
+            if classitem not in current_class:
+                current_class.append(classitem)
+                
+                        
         if current_class:
             widget_attrs['class'] = ' '.join(current_class)
 
